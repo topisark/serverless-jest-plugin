@@ -84,7 +84,14 @@ class ServerlessJestPlugin {
       'create:test:test': () =>
         BbPromise.bind(this).then(() => createTest(this.serverless, this.options)),
       'invoke:test:test': () =>
-        BbPromise.bind(this).then(() => runTests(this.serverless, this.options, this.config)),
+        BbPromise.bind(this)
+          .then(() => runTests(this.serverless, this.options, this.config))
+          .catch((err) => {
+            if (err.success === false) {
+              process.exit(1);
+            }
+            throw err;
+          }),
       'create:function:create': () =>
         BbPromise.bind(this)
           .then(() => createFunction(this.serverless, this.options))
